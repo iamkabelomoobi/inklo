@@ -45,7 +45,7 @@ const OnboardingScreen = () => {
   }, [appIsReady, fontsLoaded]);
 
   const handleShopNowPress = () => {
-    router.replace("/(home)/home");
+    router.replace("/(auth)/signin");
   };
 
 
