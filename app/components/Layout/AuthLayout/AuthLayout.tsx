@@ -9,7 +9,11 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ backgroundImage, children }: AuthLayoutProps) => (
   <ImageBackground
-    source={{ uri: backgroundImage }}
+    source={
+      backgroundImage
+        ? { uri: backgroundImage }
+        : require("../../../../assets/images/auth/auth.jpg")
+    }
     style={styles.bg}
     resizeMode="cover"
   >
