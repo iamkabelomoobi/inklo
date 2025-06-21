@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   ctaButtonText: {
-    color: "#111",
+    color: "#100C08",
     fontWeight: "bold",
     fontSize: 18,
     letterSpacing: 1,

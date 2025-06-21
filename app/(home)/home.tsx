@@ -84,12 +84,12 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     borderWidth: 2,
-    borderColor: "#111",
+    borderColor: "#100C08",
   },
   headerGreeting: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#111",
+    color: "#100C08",
     marginBottom: 4,
   },
   headerSub: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 15,
-    color: "#111",
+    color: "#100C08",
     backgroundColor: "transparent",
     padding: 0,
   },
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     alignSelf: "flex-start",
   },
-  bannerButtonText: { color: "#111", fontWeight: "bold", fontSize: 14 },
+  bannerButtonText: { color: "#100C08", fontWeight: "bold", fontSize: 14 },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 8,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "bold", color: "#111" },
+  sectionTitle: { fontSize: 18, fontWeight: "bold", color: "#100C08" },
   viewAll: { color: "#888", fontSize: 14 },
   productCard: {
     width: 140,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 12,
     left: 12,
-    backgroundColor: "#111",
+    backgroundColor: "#100C08",
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -222,10 +222,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   storeName: {
-    fontSize: 25,
+    fontSize: 35,
     fontStyle: "normal",
     fontWeight: "900",
-    color: "#111",
+    color: "#100C08",
     fontFamily: "GothamBold",
   },
 });

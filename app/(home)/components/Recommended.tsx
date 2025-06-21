@@ -45,7 +45,7 @@ const Recommended = ({ styles }: { styles: any }) => (
             resizeMode="cover"
           />
           <Text style={styles.productTitle}>{item.name}</Text>
-          <Text style={{ color: "#111", fontWeight: "bold" }}>
+          <Text style={{ color: "#100C08", fontWeight: "bold" }}>
             {item.price}
           </Text>
         </TouchableOpacity>

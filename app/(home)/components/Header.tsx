@@ -6,11 +6,11 @@ const Header = ({ styles }: any) => (
   <View style={styles.headerCard}>
     <View style={styles.headerTopRow}>
       <TouchableOpacity>
-        <Ionicons name="menu" size={28} color="#111" />
+        <Ionicons name="menu" size={28} color="#100C08" />
       </TouchableOpacity>
-      <Text style={styles.storeName}>.com</Text>
+      <Text style={styles.storeName}>Inklo</Text>
       <TouchableOpacity>
-        <Ionicons name="notifications-outline" size={28} color="#111" />
+        <Ionicons name="notifications-outline" size={28} color="#100C08" />
       </TouchableOpacity>
     </View>
     <View style={styles.searchBar}>
@@ -22,7 +22,7 @@ const Header = ({ styles }: any) => (
       <Ionicons
         name="search"
         size={22}
-        color="#111"
+        color="#100C08"
         style={styles.searchIcon}
       />
     </View>
