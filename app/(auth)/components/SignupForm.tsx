@@ -1,3 +1,4 @@
+import Input from "@/components/ui/Input";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -6,9 +7,8 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 const SignUPForm = () => {
@@ -26,7 +26,6 @@ const SignUPForm = () => {
       return;
     }
     console.log("Signing up with:", name, email, password);
-    router.replace("/(home)/home");
   };
 
   const togglePasswordVisibility = () => {
@@ -53,25 +52,26 @@ const SignUPForm = () => {
             color="#888"
             style={styles.inputIcon}
           />
-          <TextInput
+          <Input
             style={styles.input}
             placeholder="James Leo"
-            placeholderTextColor="#999"          value={name}
-          onChangeText={setName}
-        />
-      </View>
+            placeholderTextColor="#999"
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
 
-      <View style={styles.inputWrapper}>
-        <Ionicons
-          name="mail-outline"
-          size={20}
-          color="#888"
-          style={styles.inputIcon}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="leo@gmail.com"
-          placeholderTextColor="#999"
+        <View style={styles.inputWrapper}>
+          <Ionicons
+            name="mail-outline"
+            size={20}
+            color="#888"
+            style={styles.inputIcon}
+          />
+          <Input
+            style={styles.input}
+            placeholder="leo@gmail.com"
+            placeholderTextColor="#999"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -86,7 +86,7 @@ const SignUPForm = () => {
             color="#888"
             style={styles.inputIcon}
           />
-          <TextInput
+          <Input
             style={styles.input}
             placeholder="••••••••"
             placeholderTextColor="#999"
@@ -107,8 +107,8 @@ const SignUPForm = () => {
         </View>
 
         <View style={styles.policyContainer}>
-          <TouchableOpacity 
-            style={styles.checkbox} 
+          <TouchableOpacity
+            style={styles.checkbox}
             onPress={() => setPolicyAgreed(!policyAgreed)}
           >
             {policyAgreed ? (
@@ -146,7 +146,7 @@ const SignUPForm = () => {
       {/* Sign iN Link */}
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Have an account? </Text>
-        <TouchableOpacity onPress={() => router.push("/(auth)/signin")}>
+        <TouchableOpacity onPress={() => router.push("/(auth)/SignInScreen")}>
           <Text style={styles.signupLink}>Sign In</Text>
         </TouchableOpacity>
       </View>
@@ -157,60 +157,58 @@ const SignUPForm = () => {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Terms & Conditions</Text>
-              <TouchableOpacity 
-                style={styles.closeIcon} 
+              <TouchableOpacity
+                style={styles.closeIcon}
                 onPress={() => setShowTerms(false)}
               >
                 <Ionicons name="close" size={24} color="#100C08" />
               </TouchableOpacity>
             </View>
-            <ScrollView 
+            <ScrollView
               style={styles.modalScrollView}
               showsVerticalScrollIndicator={true}
             >
               <Text style={styles.modalText}>
                 <Text style={styles.boldText}>Introduction:{"\n"}</Text>
-                Welcome to our app! By creating an account, you agree to
-                abide by our rules and policies. Your data will be handled
-                securely and not shared with third parties without your
-                consent.{"\n\n"}
-                
+                Welcome to our app! By creating an account, you agree to abide
+                by our rules and policies. Your data will be handled securely
+                and not shared with third parties without your consent.{"\n\n"}
                 <Text style={styles.boldText}>Important Notice:{"\n"}</Text>
-                Please ensure that all information provided is accurate and
-                up to date. Misuse of the platform or violation of our terms
-                may result in suspension or termination of your account.
+                Please ensure that all information provided is accurate and up
+                to date. Misuse of the platform or violation of our terms may
+                result in suspension or termination of your account.
                 {"\n\n"}
-                
                 <Text style={styles.boldText}>Returns:{"\n"}</Text>
                 If you are not satisfied with your purchase, you may return
                 eligible items within 14 days of receipt for a refund or
-                exchange, subject to our returns policy. Please read our
-                full terms for more information.{"\n\n"}
-                
+                exchange, subject to our returns policy. Please read our full
+                terms for more information.{"\n\n"}
                 <Text style={styles.boldText}>Privacy Policy:{"\n"}</Text>
-                We collect personal information to provide our services. This includes
-                your name, email address, and payment details. We implement security
-                measures to protect your data but cannot guarantee absolute security.
+                We collect personal information to provide our services. This
+                includes your name, email address, and payment details. We
+                implement security measures to protect your data but cannot
+                guarantee absolute security.
                 {"\n\n"}
-                
                 <Text style={styles.boldText}>Payment Terms:{"\n"}</Text>
-                All payments are processed securely. We accept major credit cards and
-                digital payment methods. Prices are displayed in your local currency and
-                include applicable taxes. Subscription services will automatically renew
-                unless cancelled before the renewal date.
+                All payments are processed securely. We accept major credit
+                cards and digital payment methods. Prices are displayed in your
+                local currency and include applicable taxes. Subscription
+                services will automatically renew unless cancelled before the
+                renewal date.
                 {"\n\n"}
-                
-                <Text style={styles.boldText}>User Responsibilities:{"\n"}</Text>
-                Users are responsible for maintaining the confidentiality of their account
-                information. Any activities occurring under your account are your responsibility.
-                Do not share your login credentials with third parties.
+                <Text style={styles.boldText}>
+                  User Responsibilities:{"\n"}
+                </Text>
+                Users are responsible for maintaining the confidentiality of
+                their account information. Any activities occurring under your
+                account are your responsibility. Do not share your login
+                credentials with third parties.
                 {"\n\n"}
-                
                 <Text style={styles.boldText}>Content Guidelines:{"\n"}</Text>
-                Users must not upload, share, or create content that is illegal, harmful,
-                threatening, abusive, defamatory, or otherwise objectionable. We reserve
-                the right to remove content that violates these guidelines and to suspend
-                or terminate accounts.
+                Users must not upload, share, or create content that is illegal,
+                harmful, threatening, abusive, defamatory, or otherwise
+                objectionable. We reserve the right to remove content that
+                violates these guidelines and to suspend or terminate accounts.
               </Text>
             </ScrollView>
             <TouchableOpacity
@@ -335,85 +333,85 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   policyContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
   },
   checkbox: {
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#100C08',
+    borderColor: "#100C08",
     borderRadius: 4,
     marginRight: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   policyText: {
     fontSize: 14,
-    color: '#555',
+    color: "#555",
     flex: 1,
   },
   policyLink: {
-    color: '#100C08',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
+    color: "#100C08",
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    maxHeight: '80%',
-    minHeight: '50%',
+    maxHeight: "80%",
+    minHeight: "50%",
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingBottom: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     marginBottom: 15,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#100C08',
+    fontWeight: "bold",
+    color: "#100C08",
   },
   closeIcon: {
     padding: 5,
   },
   modalScrollView: {
-    maxHeight: '70%',
+    maxHeight: "70%",
   },
   modalText: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#333',
+    color: "#333",
     marginBottom: 20,
   },
   boldText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
-    color: '#100C08',
+    color: "#100C08",
   },
   closeBtn: {
-    backgroundColor: '#100C08',
+    backgroundColor: "#100C08",
     paddingVertical: 12,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 15,
   },
   closeBtnText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

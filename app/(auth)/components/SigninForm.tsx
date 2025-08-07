@@ -1,10 +1,12 @@
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,8 +17,7 @@ const SigninForm = () => {
   const [password, setPassword] = useState("");
 
   const handleSignIn = () => {
-    console.log("Sign in with:", email, password);
-    router.replace("/(home)/home");
+    // router.replace("/(home)/home");
   };
 
   const togglePasswordVisibility = () => {
@@ -38,7 +39,7 @@ const SigninForm = () => {
             color="#888"
             style={styles.inputIcon}
           />
-          <TextInput
+          <Input
             style={styles.input}
             placeholder="leo@gmail.com"
             placeholderTextColor="#999"
@@ -56,9 +57,9 @@ const SigninForm = () => {
             color="#888"
             style={styles.inputIcon}
           />
-          <TextInput
+          <Input
             style={styles.input}
-            placeholder="••••••••"
+            placeholder="**********"
             placeholderTextColor="#999"
             secureTextEntry={!passwordVisible}
             value={password}
@@ -76,16 +77,22 @@ const SigninForm = () => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.forgotPasswordContainer}
-          onPress={() => router.push("/(auth)/forgot-password")}
-        >
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
+        <Button
+          styles={{
+            button: styles.forgotPasswordContainer,
+          }}
+          title="Forgot Password"
+          onPress={() => router.push("/(auth)/ForgotPasswordScreen")}
+        />
 
-        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-          <Text style={styles.signInButtonText}>Sign In</Text>
-        </TouchableOpacity>
+        <Button
+          styles={{
+            button: styles.signInButton,
+            text: styles.signInButtonText,
+          }}
+          title="Sign In"
+          onPress={handleSignIn}
+        />
       </View>
 
       {/* Social Login Section */}
@@ -94,19 +101,22 @@ const SigninForm = () => {
           <TouchableOpacity style={styles.socialIcon}>
             <Ionicons name="logo-facebook" size={24} color="#3b5998" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialIcon}>
-            <Ionicons name="logo-google" size={24} color="#db4437" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialIcon}>
-            <Ionicons name="logo-apple" size={24} color="#000" />
-          </TouchableOpacity>
+          {Platform.OS === "ios" ? (
+            <TouchableOpacity style={styles.socialIcon}>
+              <Ionicons name="logo-apple" size={24} color="#000" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.socialIcon}>
+              <Ionicons name="logo-google" size={24} color="#db4437" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
       {/* Sign Up Link */}
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Dont Have an account? </Text>
-        <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+        <TouchableOpacity onPress={() => router.push("/(auth)/SignUpScreen")}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -172,12 +182,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   forgotPasswordText: {
-    color: "#100C08",
+    color: "#000000",
     fontSize: 14,
     fontWeight: "500",
   },
   signInButton: {
-    backgroundColor: "#100C08",
+    backgroundColor: "#000000",
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: "center",
@@ -218,7 +228,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signupLink: {
-    color: "#100C08",
+    color: "#000000",
     fontWeight: "bold",
     fontSize: 14,
   },

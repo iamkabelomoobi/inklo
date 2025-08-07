@@ -1,97 +1,143 @@
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const ForgotPasswordForm = () => (
-  <View>
-    <View style={styles.topSection}>
-      <Text style={styles.title}>Forgot Password?</Text>
-      <Text style={styles.subtitle}>
-        Enter your email to receive a reset link.
-      </Text>
-    </View>
-    <View style={styles.formSection}>
-      <Text style={styles.label}>Email Address</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        placeholderTextColor="#fff9"
-        keyboardType="email-address"
-      />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.replace("/(auth)/verify-otp")}
-      >
-        <Text style={styles.buttonText}>Send OTP</Text>
-      </TouchableOpacity>
-    </View>
-    <View style={styles.bottomSection}>
-      <TouchableOpacity onPress={() => router.replace("/(auth)/signin")}>
-        <Text style={styles.buttonText}>Back to Sign In</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+const ForgotPasswordForm = () => {
+  const [email, setEmail] = useState("");
 
-export default ForgotPasswordForm;
+  const handleRecoverPassword = () => {
+    // TODO: Implement password recovery logic
+    router.push("/(auth)/VerifyOtpScreen");
+  };
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardTitle}>Recover Password</Text>
+      </View>
+
+      {/* Form Fields */}
+      <View style={styles.inputContainer}>
+        <View style={styles.inputWrapper}>
+          <Ionicons
+            name="mail-outline"
+            size={20}
+            color="#888"
+            style={styles.inputIcon}
+          />
+          <Input
+            style={styles.input}
+            placeholder="leo@gmail.com"
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <Button
+          styles={{
+            button: styles.forgotPasswordButton,
+            text: styles.forgotPasswordButtonText,
+          }}
+          title="Send Reset Link"
+          onPress={handleRecoverPassword}
+        />
+      </View>
+
+      {/* Sign Up Link */}
+      <View style={styles.forgotPasswordContainer}>
+        <TouchableOpacity onPress={() => router.push("/(auth)/SignInScreen")}>
+          <Text style={styles.forgotPasswordLink}>Remember Password?</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  topSection: {
-    alignItems: "center",
-    marginTop: 48,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    color: "#fff",
-    fontSize: 15,
-    textAlign: "center",
-    opacity: 0.9,
-  },
-  formSection: {
-    backgroundColor: "rgba(0,0,0,0.18)",
+  card: {
+    backgroundColor: "rgba(255,255,255,0.65)",
     borderRadius: 24,
-    padding: 24,
-    marginHorizontal: 0,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    width: "100%",
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  label: { color: "#fff", marginTop: 12, marginBottom: 2 },
-  input: {
-    backgroundColor: "rgba(255,255,255,0.18)",
-    borderRadius: 20,
-    padding: 12,
-    color: "#fff",
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  button: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 14,
+  cardHeader: {
     alignItems: "center",
-    marginTop: 18,
+    marginBottom: 24,
+  },
+  cardTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 4,
   },
-  buttonText: { color: "#000", fontWeight: "bold", fontSize: 16 },
-  bottomSection: {
-    marginTop: 24,
-    alignItems: "center",
+  cardSubtitle: {
+    fontSize: 14,
+    color: "#777",
   },
-  back: {
-    color: "#fff",
-    textAlign: "center",
-    marginTop: 16,
-    textDecorationLine: "underline",
-    fontSize: 15,
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    height: 50,
+    backgroundColor: "#F9F9F9",
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
+  },
+  eyeIcon: {
+    padding: 4,
+  },
+  forgotPasswordButton: {
+    backgroundColor: "#000000",
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: "center",
+    marginTop: 4,
+  },
+  forgotPasswordButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  forgotPasswordContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 5,
+  },
+  forgotPasswordText: {
+    color: "#777",
+    fontSize: 14,
+  },
+  forgotPasswordLink: {
+    color: "#000000",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
+
+export default ForgotPasswordForm;

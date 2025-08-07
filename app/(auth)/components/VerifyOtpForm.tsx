@@ -1,101 +1,149 @@
+import Button from "@/components/ui/Button";
+import OtpInput from "@/components/ui/OtpInput";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const VerifyOtpForm = () => {
   const [otp, setOtp] = useState("");
 
+  const handleOtpComplete = (enteredOtp: string) => {
+    setOtp(enteredOtp);
+  };
+
+  const handleVerifyOtp = () => {
+    console.log("Verifying OTP:", otp);
+    router.push("/(auth)/ResetPasswordScreen");
+  };
+
   return (
-    <View>
-      <View style={styles.topSection}>
-        <Text style={styles.title}>Enter OTP</Text>
-        <Text style={styles.subtitle}>Check your email for the OTP code.</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Verify OTP</Text>
+          <Text style={styles.cardSubtitle}>
+            Enter the 6-digit code sent to your email
+          </Text>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <OtpInput
+            length={6}
+            onOtpFilled={handleOtpComplete}
+            inputStyles={styles.otpInput}
+          />
+
+          <Button
+            styles={{
+              button: styles.verifyButton,
+              text: styles.verifyButtonText,
+            }}
+            title="Verify OTP"
+            onPress={handleVerifyOtp}
+          />
+        </View>
       </View>
-      <View style={styles.formSection}>
-        <Text style={styles.label}>OTP Code</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter OTP"
-          placeholderTextColor="#fff9"
-          keyboardType="numeric"
-          value={otp}
-          onChangeText={setOtp}
-        />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.replace("/(auth)/reset-password")}
-        >
-          <Text style={styles.buttonText}>Verify OTP</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.bottomSection}>
-        <TouchableOpacity>
-          <Text style={styles.resend}>Resend OTP</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
-
-export default VerifyOtpForm;
-
 const styles = StyleSheet.create({
-  topSection: {
-    alignItems: "center",
-    marginTop: 48,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    color: "#fff",
-    fontSize: 15,
-    textAlign: "center",
-    opacity: 0.9,
-  },
-  formSection: {
-    backgroundColor: "rgba(0,0,0,0.18)",
+  card: {
+    backgroundColor: "rgba(255,255,255,0.65)",
     borderRadius: 24,
-    padding: 24,
-    marginHorizontal: 0,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    width: "100%",
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  label: { color: "#fff", marginTop: 12, marginBottom: 2 },
-  input: {
-    backgroundColor: "rgba(255,255,255,0.18)",
-    borderRadius: 20,
-    padding: 12,
-    color: "#fff",
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  button: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 14,
+  cardHeader: {
     alignItems: "center",
-    marginTop: 18,
+    marginBottom: 24,
+  },
+  cardTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 4,
   },
-  buttonText: { color: "#000", fontWeight: "bold", fontSize: 16 },
-  bottomSection: {
-    marginTop: 24,
-    alignItems: "center",
+  cardSubtitle: {
+    fontSize: 14,
+    color: "#777",
   },
-  resend: {
-    color: "#fff",
-    textAlign: "center",
-    marginTop: 16,
-    textDecorationLine: "underline",
-    fontSize: 15,
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    height: 50,
+    backgroundColor: "#F9F9F9",
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
+  },
+  eyeIcon: {
+    padding: 4,
+  },
+  forgotPasswordButton: {
+    backgroundColor: "#000000",
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: "center",
+    marginTop: 4,
+  },
+  forgotPasswordButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  forgotPasswordContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 5,
+  },
+  forgotPasswordText: {
+    color: "#777",
+    fontSize: 14,
+  },
+  otpInput: {
+    borderColor: "#000",
+  },
+  otpText: {
+    color: "#333",
+  },
+  verifyButton: {
+    backgroundColor: "#000000",
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  verifyButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
+
+export default VerifyOtpForm;

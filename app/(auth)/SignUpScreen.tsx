@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import SignupForm from "./components/SignupForm";
 
-const SignupScreen = () => {
+const SignUpScreen = () => {
   return (
     <ImageBackground
       source={require("../../assets/images/auth/auth.jpg")}
@@ -65,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignupScreen;
+export default SignUpScreen;
