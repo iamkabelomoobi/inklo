@@ -23,7 +23,7 @@ const navItems: {
     key: "home",
     icon: <Ionicons name="home-outline" size={26} color="#2A2A2A" />,
     label: "Home",
-    route: "/(home)/home",
+    route: "/(home)",
   },
   {
     key: "shop",
@@ -59,16 +59,10 @@ const navItems: {
 
 const BottomNav = () => {
   const router = useRouter();
-  const pathname = usePathname();
 
-  function safeNavigate(route: ShopRoutes) {
+  const safeNavigate = (route: ShopRoutes) => {
     router.push(route as any);
-  }
-
-  // Hide on splash screen
-  if (pathname.includes("splash")) {
-    return null;
-  }
+  };
 
   return (
     <BlurView intensity={40} tint="light" style={styles.container}>
