@@ -1,22 +1,29 @@
-import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ImageBackground,
+  Dimensions,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import OnboardingScreen1 from "./screens/OnboardingScreen1";
+import OnboardingScreen2 from "./screens/OnboardingScreen2";
+import OnboardingScreen3 from "./screens/OnboardingScreen3";
+import OnboardingScreen4 from "./screens/OnboardingScreen4";
 
 SplashScreen.preventAutoHideAsync();
+
+const { width: screenWidth } = Dimensions.get("window");
 
 const OnboardingScreen = () => {
   const router = useRouter();
   const [appIsReady, setAppIsReady] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const [fontsLoaded] = useFonts({
     "Gotham-Black": require("../../assets/fonts/Gotham-Black.otf"),
@@ -44,70 +51,94 @@ const OnboardingScreen = () => {
     }
   }, [appIsReady, fontsLoaded]);
 
-  const handleShopNowPress = () => {
+  const handleNext = () => {
+    if (currentIndex < 3) {
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      scrollViewRef.current?.scrollTo({
+        x: nextIndex * screenWidth,
+        animated: true,
+      });
+    } else {
+      router.replace("/(home)/home");
+    }
+  };
+
+  const handleShopNow = () => {
     router.replace("/(home)/home");
   };
 
+  const handleScroll = (event: any) => {
+    const contentOffset = event.nativeEvent.contentOffset;
+    const currentIdx = Math.round(contentOffset.x / screenWidth);
+    setCurrentIndex(currentIdx);
+  };
+
+  const handlePaginationPress = (index: number) => {
+    setCurrentIndex(index);
+    scrollViewRef.current?.scrollTo({
+      x: index * screenWidth,
+      animated: true,
+    });
+  };
 
   if (!appIsReady || !fontsLoaded) {
     return null;
   }
 
+  const renderPagination = () => (
+    <View style={styles.paginationContainer}>
+      {[0, 1, 2, 3].map((dotIndex) => (
+        <TouchableOpacity
+          key={dotIndex}
+          onPress={() => handlePaginationPress(dotIndex)}
+        >
+          <View
+            style={[
+              styles.paginationDot,
+              currentIndex === dotIndex && styles.activeDot,
+            ]}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
-      <ImageBackground
-        source={require("../../assets/images/onboarding/onboarding.jpg")}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleScroll}
+        scrollEventThrottle={16}
       >
-        {/* Blur left half */}
-        <View style={styles.leftBlurContainer}>
-          <BlurView intensity={20} style={styles.blurView} tint="dark">
-            <View style={styles.leftOverlay} />
-          </BlurView>
+        <View style={styles.screenContainer}>
+          <OnboardingScreen1
+            onNext={handleNext}
+            paginationComponent={renderPagination()}
+          />
         </View>
-
-        {/* Right overlay */}
-        <View style={styles.rightOverlayContainer}>
-          <View style={styles.rightOverlay} />
+        <View style={styles.screenContainer}>
+          <OnboardingScreen2
+            onNext={handleNext}
+            paginationComponent={renderPagination()}
+          />
         </View>
-
-        {/* Center divider */}
-        <View style={styles.divider} />
-
-        {/* Content overlay */}
-        <View style={styles.contentWrapper}>
-          <View style={styles.header}>
-            <Text style={styles.brandName}>Inklo</Text>
-            {/* <TouchableOpacity onPress={handleSkipPress}>
-              <Text style={styles.skipText}>Skip</Text>
-            </TouchableOpacity> */}
-          </View>
-
-          <View style={styles.contentContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>WEAR IT{"\n"}FASHIONABLE</Text>
-              <Text style={styles.subtitle}>its more than just clothes</Text>
-            </View>
-
-            <View style={styles.footer}>
-              <View style={styles.paginationContainer}>
-                <View style={[styles.paginationDot, styles.activeDot]} />
-                <View style={styles.paginationDot} />
-                <View style={styles.paginationDot} />
-                <View style={styles.paginationDot} />
-              </View>
-
-              <TouchableOpacity
-                style={styles.shopButton}
-                onPress={handleShopNowPress}
-              >
-                <Text style={styles.shopButtonText}>Shop now</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        <View style={styles.screenContainer}>
+          <OnboardingScreen3
+            onNext={handleNext}
+            paginationComponent={renderPagination()}
+          />
         </View>
-      </ImageBackground>
+        <View style={styles.screenContainer}>
+          <OnboardingScreen4
+            onShopNow={handleShopNow}
+            paginationComponent={renderPagination()}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -117,121 +148,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#000",
   },
-  backgroundImage: {
+  screenContainer: {
+    width: screenWidth,
     flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  leftBlurContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: "50%",
-    overflow: "hidden",
-  },
-  blurView: {
-    flex: 1,
-  },
-  leftOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-  },
-  rightOverlayContainer: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: "50%",
-  },
-  rightOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-  },
-  divider: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: "50%",
-    width: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    zIndex: 10,
-  },
-  contentWrapper: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "space-between",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 20,
-    paddingHorizontal: 10,
-  },
-  brandName: {
-    color: "#FFFFFF",
-    fontSize: 34,
-    fontFamily: "Gotham-Black",
-    letterSpacing: 2,
-  },
-  // skipText: {
-  //   color: "#FFFFFF",
-  //   fontSize: 16,
-  //   fontWeight: "500",
-  // },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    paddingBottom: 50,
-  },
-  textContainer: {
-    marginBottom: 80,
-  },
-  title: {
-    color: "#FFFFFF",
-    fontSize: 36,
-    fontFamily: "Gotham-Black",
-    lineHeight: 42,
-    letterSpacing: 1,
-    marginBottom: 10,
-  },
-  subtitle: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    opacity: 0.9,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   paginationContainer: {
     flexDirection: "row",
+    gap: 5,
   },
   paginationDot: {
     width: 20,
     height: 3,
     backgroundColor: "rgba(255, 255, 255, 0.3)",
-    marginRight: 5,
     borderRadius: 1,
   },
   activeDot: {
     backgroundColor: "#FFFFFF",
     width: 30,
-  },
-  shopButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 5,
-  },
-  shopButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "500",
   },
 });
 
