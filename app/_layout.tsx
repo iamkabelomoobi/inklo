@@ -1,17 +1,18 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
-import BottomNav from "./components/BottomNav";
 
 const RootLayout = () => {
   return (
     <View style={styles.container}>
-      <StatusBar hidden={true} translucent={false} />
+      <StatusBar hidden={false} translucent={false} />
       <Stack
         initialRouteName="(onboarding)/onboarding"
-        screenOptions={{ headerShown: false }} // set to false in production
-      ></Stack>
-      {/* <BottomNav /> */}
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(onboarding)/onboarding" />
+      </Stack>
     </View>
   );
 };

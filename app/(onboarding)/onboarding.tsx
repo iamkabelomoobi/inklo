@@ -60,12 +60,12 @@ const OnboardingScreen = () => {
         animated: true,
       });
     } else {
-      router.replace("/(home)/home");
+      router.replace("/(auth)/signin");
     }
   };
 
   const handleShopNow = () => {
-    router.replace("/(home)/home");
+    router.replace("/(auth)/signin");
   };
 
   const handleScroll = (event: any) => {
