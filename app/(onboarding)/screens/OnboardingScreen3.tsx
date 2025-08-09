@@ -13,7 +13,7 @@ const OnboardingScreen3: React.FC<OnboardingScreen3Props> = ({
   return (
     <OnboardingScreenBase
       image={require("../../../assets/images/onboarding/onboarding-3.jpg")}
-      title="PREMIUM\nQUALITY"
+      title="PREMIUM QUALITY"
       subtitle="Every piece is crafted with attention to detail and finest materials"
       buttonText="Next"
       overlayColor="rgba(50, 20, 20, 0.5)"

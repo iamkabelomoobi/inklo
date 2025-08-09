@@ -13,7 +13,7 @@ const OnboardingScreen4: React.FC<OnboardingScreen4Props> = ({
   return (
     <OnboardingScreenBase
       image={require("../../../assets/images/onboarding/onboarding-4.jpg")}
-      title="START YOUR\nJOURNEY"
+      title="START YOUR JOURNEY"
       subtitle="Join thousands of fashion lovers and begin your style transformation"
       buttonText="Shop now"
       overlayColor="rgba(20, 50, 20, 0.5)"
