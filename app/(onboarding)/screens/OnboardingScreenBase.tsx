@@ -30,22 +30,18 @@ const OnboardingScreenBase: React.FC<OnboardingScreenBaseProps> = ({
 }) => {
   return (
     <ImageBackground source={image} style={styles.backgroundImage} resizeMode="cover">
-      {/* Blur left half */}
       <View style={styles.leftBlurContainer}>
         <BlurView intensity={20} style={styles.blurView} tint="dark">
           <View style={styles.leftOverlay} />
         </BlurView>
       </View>
 
-      {/* Right overlay */}
       <View style={styles.rightOverlayContainer}>
         <View style={[styles.rightOverlay, { backgroundColor: overlayColor }]} />
       </View>
 
-      {/* Center divider */}
       <View style={styles.divider} />
 
-      {/* Content overlay */}
       <View style={styles.contentWrapper}>
         <View style={styles.header}>
           <Text style={styles.brandName}>Inklo</Text>
