@@ -1,71 +1,46 @@
-backend/dist
-backend/.env
-backend/.DS_Store
-backend/uploads
-backend/node_modules
-backend/yarn-error.log
 
-.idea
-
-backend/coverage
-
-backend/!src/**
-
-backend/./tsconfig.tsbuildinfo
-backend/medusa-db.sql
-backend/build
-backend/.cache
-
-backend/.yarn/*
-backend/!.yarn/patches
-backend/!.yarn/plugins
-backend/!.yarn/releases
-backend/!.yarn/sdks
-backend/!.yarn/versions
-
-backend/.medusa
-
-# Mobile App
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # dependencies
-mobile/node_modules/
+node_modules/
 
 # Expo
-mobile/.expo/
-mobile/dist/
-mobile/web-build/
-mobile/expo-env.d.ts
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
 # Native
-mobile/.kotlin/
-mobile/*.orig.*
-mobile/*.jks
-mobile/*.p8
-mobile/*.p12
-mobile/*.key
-mobile/*.mobileprovision
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
 # Metro
-mobile/.metro-health-check*
+.metro-health-check*
 
 # debug
-mobile/npm-debug.*
-mobile/yarn-debug.*
-mobile/yarn-error.*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
 # macOS
-mobile/.DS_Store
-mobile/*.pem
+.DS_Store
+*.pem
 
 # local env files
-mobile/.env*.local
+.env*.local
 
 # typescript
-mobile/*.tsbuildinfo
+*.tsbuildinfo
 
-mobile/app-example
+app-example
 
 # generated native folders
-mobile/ios
-mobile/android
+ios
+android
+
+
