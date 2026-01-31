@@ -1,4 +1,8 @@
+import useAuthAnimations from "@/app/hooks/useAuthAnimations";
+import { createAuthStyles } from "@/app/theme/authStyles";
 import { Images } from "@/assets/images";
+import { useLogin } from "@/hooks/useAuth";
+import { LoginRequest } from "@/interfaces/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -15,17 +19,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthAnimations from "@/app/hooks/useAuthAnimations";
-import { createAuthStyles } from "@/app/theme/authStyles";
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState<LoginRequest>({
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {}
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof LoginRequest, string>>
+  >({});
+
+  const { mutate: login, isPending } = useLogin();
 
   const {
     logoFadeAnim,
@@ -44,15 +49,15 @@ const LoginScreen = () => {
   const validateForm = () => {
     const newErrors: typeof errors = {};
 
-    if (!email.trim()) {
+    if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!validateEmail(email)) {
+    } else if (!validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
 
-    if (!password) {
+    if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (password.length < 8) {
+    } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
@@ -62,23 +67,18 @@ const LoginScreen = () => {
 
   const handleSignIn = () => {
     if (validateForm()) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
+      login({
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      });
     }
   };
 
-  const handleFieldChange = (field: keyof typeof errors, value: string) => {
+  const handleFieldChange = (field: keyof LoginRequest, value: string) => {
     if (errors[field]) {
       setErrors({ ...errors, [field]: undefined });
     }
-
-    if (field === "email") {
-      setEmail(value);
-    } else {
-      setPassword(value);
-    }
+    setFormData({ ...formData, [field]: value });
   };
 
   return (
@@ -148,7 +148,10 @@ const LoginScreen = () => {
           <Animated.View
             style={[
               styles.card,
-              { opacity: formFadeAnim, transform: [{ translateY: formSlideAnim }] },
+              {
+                opacity: formFadeAnim,
+                transform: [{ translateY: formSlideAnim }],
+              },
             ]}
           >
             <Text style={styles.subHeading}>Sign in to continue</Text>
@@ -176,7 +179,7 @@ const LoginScreen = () => {
                   style={styles.input}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  value={email}
+                  value={formData.email}
                   onChangeText={(text) => handleFieldChange("email", text)}
                 />
               </View>
@@ -204,7 +207,7 @@ const LoginScreen = () => {
                   placeholderTextColor="#999"
                   style={[styles.input, styles.passwordInput]}
                   secureTextEntry={!showPassword}
-                  value={password}
+                  value={formData.password}
                   onChangeText={(text) => handleFieldChange("password", text)}
                 />
                 <TouchableOpacity
@@ -234,11 +237,11 @@ const LoginScreen = () => {
             </View>
 
             <TouchableOpacity
-              style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
+              style={[styles.primaryButton, isPending && styles.buttonDisabled]}
               onPress={handleSignIn}
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.primaryButtonText}>Sign In</Text>
@@ -266,7 +269,8 @@ const LoginScreen = () => {
               onPress={() => router.push("/screens/(auth)/RegisterScreen")}
             >
               <Text style={styles.footerText}>
-                New to Inklo? <Text style={styles.footerLink}>Create account</Text>
+                New to Inklo?{" "}
+                <Text style={styles.footerLink}>Create account</Text>
               </Text>
             </TouchableOpacity>
           </Animated.View>

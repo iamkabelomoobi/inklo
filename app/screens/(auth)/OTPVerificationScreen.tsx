@@ -1,4 +1,7 @@
+import useAuthAnimations from "@/app/hooks/useAuthAnimations";
+import { createAuthStyles } from "@/app/theme/authStyles";
 import { Images } from "@/assets/images";
+import { useForgotPassword, useVerifyOTP } from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -15,21 +18,21 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthAnimations from "@/app/hooks/useAuthAnimations";
-import { createAuthStyles } from "@/app/theme/authStyles";
 
 const OTPVerificationScreen = () => {
   const params = useLocalSearchParams<{ email?: string }>();
   const emailParam = Array.isArray(params.email)
     ? params.email[0]
     : params.email;
-  const email = emailParam ?? "your email";
+  const email = emailParam ?? "";
 
   const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(60);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: verifyOTP, isPending } = useVerifyOTP();
+  const { mutate: resendCode, isPending: isResending } = useForgotPassword();
 
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
@@ -83,24 +86,27 @@ const OTPVerificationScreen = () => {
       return;
     }
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push({
-        pathname: "/screens/(auth)/ResetPasswordScreen",
-        params: { email },
-      });
-    }, 1200);
+    verifyOTP({
+      email,
+      otp: joinedCode,
+    });
   };
 
   const handleResend = () => {
-    if (timer > 0) {
+    if (timer > 0 || isResending) {
       return;
     }
 
-    setCode(["", "", "", "", "", ""]);
-    setTimer(60);
-    inputRefs.current[0]?.focus();
+    resendCode(
+      { email },
+      {
+        onSuccess: () => {
+          setCode(["", "", "", "", "", ""]);
+          setTimer(60);
+          inputRefs.current[0]?.focus();
+        },
+      }
+    );
   };
 
   return (
@@ -208,11 +214,11 @@ const OTPVerificationScreen = () => {
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity
-              style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
+              style={[styles.primaryButton, isPending && styles.buttonDisabled]}
               onPress={handleVerify}
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.primaryButtonText}>
@@ -223,14 +229,21 @@ const OTPVerificationScreen = () => {
 
             <View style={styles.resendRow}>
               <Text style={styles.resendText}>Didn&apos;t receive it?</Text>
-              <TouchableOpacity disabled={timer > 0} onPress={handleResend}>
+              <TouchableOpacity
+                disabled={timer > 0 || isResending}
+                onPress={handleResend}
+              >
                 <Text
                   style={[
                     styles.resendButton,
-                    timer > 0 && styles.resendDisabled,
+                    (timer > 0 || isResending) && styles.resendDisabled,
                   ]}
                 >
-                  {timer > 0 ? `Resend in ${timer}s` : "Resend code"}
+                  {isResending
+                    ? "Sending..."
+                    : timer > 0
+                    ? `Resend in ${timer}s`
+                    : "Resend code"}
                 </Text>
               </TouchableOpacity>
             </View>

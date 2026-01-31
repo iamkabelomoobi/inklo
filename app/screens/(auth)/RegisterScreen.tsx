@@ -1,4 +1,8 @@
+import useAuthAnimations from "@/app/hooks/useAuthAnimations";
+import authStyles from "@/app/theme/authStyles";
 import { Images } from "@/assets/images";
+import { useRegister } from "@/hooks/useAuth";
+import { RegisterRequest } from "@/interfaces/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -15,22 +19,21 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthAnimations from "@/app/hooks/useAuthAnimations";
-import authStyles from "@/app/theme/authStyles";
 
 const RegisterScreen = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    password?: string;
-  }>({});
+  const [formData, setFormData] = useState<RegisterRequest>({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof RegisterRequest, string>>
+  >({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: register, isPending } = useRegister();
 
   const {
     logoFadeAnim,
@@ -43,28 +46,37 @@ const RegisterScreen = () => {
     circle4Anim,
   } = useAuthAnimations();
 
-  const validateEmail = (emailToValidate: string) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(emailToValidate);
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    // South African phone number format (10 digits)
+    const phoneRegex = /^0[0-9]{9}$/;
+    return phoneRegex.test(phone);
   };
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
 
-    if (!firstName.trim()) {
-      newErrors.firstName = "First name is required";
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = "First name is required";
     }
-    if (!lastName.trim()) {
-      newErrors.lastName = "Last name is required";
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = "Last name is required";
     }
-    if (!email.trim()) {
+    if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!validateEmail(email)) {
+    } else if (!validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
-    if (!password) {
+    if (formData.phone && !validatePhone(formData.phone)) {
+      newErrors.phone = "Please enter a valid 10-digit phone number";
+    }
+    if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (password.length < 8) {
+    } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
@@ -74,32 +86,27 @@ const RegisterScreen = () => {
 
   const handleSignUp = () => {
     if (validateForm()) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      const payload: RegisterRequest = {
+        first_name: formData.first_name.trim(),
+        last_name: formData.last_name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      };
+
+      // Only include phone if it's provided
+      if (formData.phone?.trim()) {
+        payload.phone = formData.phone.trim();
+      }
+
+      register(payload);
     }
   };
 
-  const handleFieldChange = (field: string, value: string) => {
-    if (errors[field as keyof typeof errors]) {
+  const handleFieldChange = (field: keyof RegisterRequest, value: string) => {
+    if (errors[field]) {
       setErrors({ ...errors, [field]: undefined });
     }
-
-    switch (field) {
-      case "firstName":
-        setFirstName(value);
-        break;
-      case "lastName":
-        setLastName(value);
-        break;
-      case "email":
-        setEmail(value);
-        break;
-      case "password":
-        setPassword(value);
-        break;
-    }
+    setFormData({ ...formData, [field]: value });
   };
 
   return (
@@ -185,7 +192,7 @@ const RegisterScreen = () => {
                 <View
                   style={[
                     authStyles.inputContainer,
-                    errors.firstName && authStyles.inputError,
+                    errors.first_name && authStyles.inputError,
                   ]}
                 >
                   <Ionicons
@@ -199,14 +206,14 @@ const RegisterScreen = () => {
                     placeholderTextColor="#999"
                     style={authStyles.input}
                     autoCapitalize="words"
-                    value={firstName}
+                    value={formData.first_name}
                     onChangeText={(text) =>
-                      handleFieldChange("firstName", text)
+                      handleFieldChange("first_name", text)
                     }
                   />
                 </View>
-                {errors.firstName && (
-                  <Text style={authStyles.errorText}>{errors.firstName}</Text>
+                {errors.first_name && (
+                  <Text style={authStyles.errorText}>{errors.first_name}</Text>
                 )}
               </View>
               <View style={authStyles.halfInputWrapper}>
@@ -214,7 +221,7 @@ const RegisterScreen = () => {
                 <View
                   style={[
                     authStyles.inputContainer,
-                    errors.lastName && authStyles.inputError,
+                    errors.last_name && authStyles.inputError,
                   ]}
                 >
                   <Ionicons
@@ -228,12 +235,14 @@ const RegisterScreen = () => {
                     placeholderTextColor="#999"
                     style={authStyles.input}
                     autoCapitalize="words"
-                    value={lastName}
-                    onChangeText={(text) => handleFieldChange("lastName", text)}
+                    value={formData.last_name}
+                    onChangeText={(text) =>
+                      handleFieldChange("last_name", text)
+                    }
                   />
                 </View>
-                {errors.lastName && (
-                  <Text style={authStyles.errorText}>{errors.lastName}</Text>
+                {errors.last_name && (
+                  <Text style={authStyles.errorText}>{errors.last_name}</Text>
                 )}
               </View>
             </View>
@@ -258,12 +267,43 @@ const RegisterScreen = () => {
                   style={authStyles.input}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  value={email}
+                  value={formData.email}
                   onChangeText={(text) => handleFieldChange("email", text)}
                 />
               </View>
               {errors.email && (
                 <Text style={authStyles.errorText}>{errors.email}</Text>
+              )}
+            </View>
+
+            <View style={authStyles.inputWrapper}>
+              <Text style={authStyles.label}>
+                Phone number <Text style={{ color: "#999" }}>(optional)</Text>
+              </Text>
+              <View
+                style={[
+                  authStyles.inputContainer,
+                  errors.phone && authStyles.inputError,
+                ]}
+              >
+                <Ionicons
+                  name="call-outline"
+                  size={18}
+                  color="#888"
+                  style={authStyles.inputIcon}
+                />
+                <TextInput
+                  placeholder="0787735258"
+                  placeholderTextColor="#999"
+                  style={authStyles.input}
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  value={formData.phone}
+                  onChangeText={(text) => handleFieldChange("phone", text)}
+                />
+              </View>
+              {errors.phone && (
+                <Text style={authStyles.errorText}>{errors.phone}</Text>
               )}
             </View>
 
@@ -286,7 +326,7 @@ const RegisterScreen = () => {
                   placeholderTextColor="#999"
                   style={[authStyles.input, authStyles.passwordInput]}
                   secureTextEntry={!showPassword}
-                  value={password}
+                  value={formData.password}
                   onChangeText={(text) => handleFieldChange("password", text)}
                 />
                 <TouchableOpacity
@@ -308,12 +348,12 @@ const RegisterScreen = () => {
             <TouchableOpacity
               style={[
                 authStyles.primaryButton,
-                isLoading && authStyles.buttonDisabled,
+                isPending && authStyles.buttonDisabled,
               ]}
               onPress={handleSignUp}
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={authStyles.primaryButtonText}>Sign Up</Text>
@@ -324,22 +364,6 @@ const RegisterScreen = () => {
               <View style={authStyles.separatorLine} />
               <View style={authStyles.separatorLine} />
             </View>
-            {/* <View style={authStyles.separator}>
-              <View style={authStyles.separatorLine} />
-              <Text style={authStyles.separatorText}>or continue with</Text>
-              <View style={authStyles.separatorLine} />
-            </View>
-
-            <View style={authStyles.socialButtons}>
-              <TouchableOpacity style={authStyles.socialButton}>
-                <Ionicons name="logo-google" size={20} color="#DB4437" />
-                <Text style={authStyles.socialButtonText}>Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={authStyles.socialButton}>
-                <Ionicons name="logo-apple" size={20} color="#000000" />
-                <Text style={authStyles.socialButtonText}>Apple</Text>
-              </TouchableOpacity>
-            </View> */}
 
             <TouchableOpacity
               onPress={() => router.push("/screens/(auth)/LoginScreen")}

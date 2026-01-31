@@ -1,4 +1,7 @@
+import useAuthAnimations from "@/app/hooks/useAuthAnimations";
+import { createAuthStyles } from "@/app/theme/authStyles";
 import { Images } from "@/assets/images";
+import { useResetPassword } from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -15,15 +18,15 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthAnimations from "@/app/hooks/useAuthAnimations";
-import { createAuthStyles } from "@/app/theme/authStyles";
 
 const ResetPasswordScreen = () => {
-  const params = useLocalSearchParams<{ email?: string }>();
+  const params = useLocalSearchParams<{ email?: string; otp?: string }>();
   const emailParam = Array.isArray(params.email)
     ? params.email[0]
     : params.email;
-  const email = emailParam ?? "your account";
+  const otpParam = Array.isArray(params.otp) ? params.otp[0] : params.otp;
+  const email = emailParam ?? "";
+  const otp = otpParam ?? "";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,8 +36,8 @@ const ResetPasswordScreen = () => {
     password?: string;
     confirmPassword?: string;
   }>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+
+  const { mutate: resetPassword, isPending } = useResetPassword();
 
   const {
     logoFadeAnim,
@@ -67,16 +70,25 @@ const ResetPasswordScreen = () => {
       return;
     }
 
-    setIsLoading(true);
-    setSuccessMessage("");
+    resetPassword({
+      otp,
+      new_password: password,
+    });
+  };
 
-    setTimeout(() => {
-      setIsLoading(false);
-      setSuccessMessage("Password updated! Redirecting to sign in...");
-      setTimeout(() => {
-        router.replace("/screens/(auth)/LoginScreen");
-      }, 900);
-    }, 1200);
+  const handleFieldChange = (
+    field: "password" | "confirmPassword",
+    value: string
+  ) => {
+    if (field === "password") {
+      setPassword(value);
+    } else {
+      setConfirmPassword(value);
+    }
+
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
+    }
   };
 
   return (
@@ -154,7 +166,7 @@ const ResetPasswordScreen = () => {
           >
             <Text style={styles.subHeading}>Secure your account</Text>
             <Text style={styles.helperText}>
-              Choose a strong password you haven&apos;t used before for {email}.
+              Choose a strong password you haven&apos;t used before.
             </Text>
 
             <View style={styles.inputWrapper}>
@@ -177,12 +189,7 @@ const ResetPasswordScreen = () => {
                   style={[styles.input, styles.passwordInput]}
                   secureTextEntry={!showPassword}
                   value={password}
-                  onChangeText={(text) => {
-                    setPassword(text);
-                    if (errors.password) {
-                      setErrors({ ...errors, password: undefined });
-                    }
-                  }}
+                  onChangeText={(text) => handleFieldChange("password", text)}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
@@ -220,12 +227,9 @@ const ResetPasswordScreen = () => {
                   style={[styles.input, styles.passwordInput]}
                   secureTextEntry={!showConfirmPassword}
                   value={confirmPassword}
-                  onChangeText={(text) => {
-                    setConfirmPassword(text);
-                    if (errors.confirmPassword) {
-                      setErrors({ ...errors, confirmPassword: undefined });
-                    }
-                  }}
+                  onChangeText={(text) =>
+                    handleFieldChange("confirmPassword", text)
+                  }
                 />
                 <TouchableOpacity
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -246,20 +250,16 @@ const ResetPasswordScreen = () => {
             </View>
 
             <TouchableOpacity
-              style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
+              style={[styles.primaryButton, isPending && styles.buttonDisabled]}
               onPress={handleResetPassword}
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.primaryButtonText}>Reset password</Text>
               )}
             </TouchableOpacity>
-
-            {!!successMessage && (
-              <Text style={styles.successText}>{successMessage}</Text>
-            )}
 
             <TouchableOpacity
               style={styles.backLink}
@@ -281,13 +281,6 @@ const styles = createAuthStyles({
     color: "#666666",
     textAlign: "center",
     marginBottom: 20,
-  },
-  successText: {
-    marginTop: 16,
-    textAlign: "center",
-    fontSize: 13,
-    color: "#16A34A",
-    fontWeight: "600",
   },
   backLink: {
     flexDirection: "row",

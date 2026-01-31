@@ -1,4 +1,7 @@
+import useAuthAnimations from "@/app/hooks/useAuthAnimations";
+import { createAuthStyles } from "@/app/theme/authStyles";
 import { Images } from "@/assets/images";
+import { useForgotPassword } from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -15,14 +18,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthAnimations from "@/app/hooks/useAuthAnimations";
-import { createAuthStyles } from "@/app/theme/authStyles";
 
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<{ email?: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [infoMessage, setInfoMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const { mutate: forgotPassword, isPending } = useForgotPassword();
 
   const {
     logoFadeAnim,
@@ -40,27 +41,23 @@ const ForgotPasswordScreen = () => {
 
   const handleSubmit = () => {
     if (!email.trim()) {
-      setErrors({ email: "Email is required" });
+      setError("Email is required");
       return;
     }
 
     if (!validateEmail(email)) {
-      setErrors({ email: "Please enter a valid email" });
+      setError("Please enter a valid email");
       return;
     }
 
-    setErrors({});
-    setInfoMessage("");
-    setIsLoading(true);
+    forgotPassword({ email: email.trim().toLowerCase() });
+  };
 
-    setTimeout(() => {
-      setIsLoading(false);
-      setInfoMessage(`We just sent a verification code to ${email}.`);
-      router.push({
-        pathname: "/screens/(auth)/OTPVerificationScreen",
-        params: { email },
-      });
-    }, 1200);
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    if (error) {
+      setError("");
+    }
   };
 
   return (
@@ -122,7 +119,7 @@ const ForgotPasswordScreen = () => {
             </Animated.View>
 
             <Animated.View style={{ opacity: logoFadeAnim }}>
-              <Text style={styles.tagline}>Need access to your account?</Text>
+              <Text style={styles.tagline}>We&apos;ve got you covered</Text>
               <Text style={styles.title}>Reset your password</Text>
             </Animated.View>
           </View>
@@ -138,18 +135,13 @@ const ForgotPasswordScreen = () => {
           >
             <Text style={styles.subHeading}>Forgot your password?</Text>
             <Text style={styles.helperText}>
-              Enter the email you used to create your account and we&apos;ll
-              send you a verification code.
+              No worries! Enter your email and we&apos;ll send you a code to
+              reset it.
             </Text>
 
             <View style={styles.inputWrapper}>
               <Text style={styles.label}>Email address</Text>
-              <View
-                style={[
-                  styles.inputContainer,
-                  errors.email && styles.inputError,
-                ]}
-              >
+              <View style={[styles.inputContainer, error && styles.inputError]}>
                 <Ionicons
                   name="mail-outline"
                   size={18}
@@ -163,40 +155,27 @@ const ForgotPasswordScreen = () => {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   value={email}
-                  onChangeText={(text) => {
-                    setEmail(text);
-                    if (errors.email) {
-                      setErrors({ ...errors, email: undefined });
-                    }
-                  }}
+                  onChangeText={handleEmailChange}
                 />
               </View>
-              {errors.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              )}
+              {error && <Text style={styles.errorText}>{error}</Text>}
             </View>
 
             <TouchableOpacity
-              style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
+              style={[styles.primaryButton, isPending && styles.buttonDisabled]}
               onPress={handleSubmit}
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.primaryButtonText}>
-                  Send verification code
-                </Text>
+                <Text style={styles.primaryButtonText}>Send reset code</Text>
               )}
             </TouchableOpacity>
 
-            {!!infoMessage && (
-              <Text style={styles.infoText}>{infoMessage}</Text>
-            )}
-
             <TouchableOpacity
               style={styles.backLink}
-              onPress={() => router.push("/screens/(auth)/LoginScreen")}
+              onPress={() => router.back()}
             >
               <Ionicons name="arrow-back" size={16} color="#111111" />
               <Text style={styles.backLinkText}>Back to Sign In</Text>
@@ -214,13 +193,6 @@ const styles = createAuthStyles({
     color: "#666666",
     textAlign: "center",
     marginBottom: 20,
-  },
-  infoText: {
-    marginTop: 16,
-    textAlign: "center",
-    fontSize: 13,
-    color: "#16A34A",
-    fontWeight: "600",
   },
   backLink: {
     flexDirection: "row",
